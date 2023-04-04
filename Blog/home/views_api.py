@@ -99,4 +99,3 @@ class RegisterView(APIView):
             
                 
 RegisterView = RegisterView.as_view()
-        

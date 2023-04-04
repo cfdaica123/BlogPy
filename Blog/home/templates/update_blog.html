@@ -1,37 +1,60 @@
-{% extends "base.html" %}
-
-{% block start %}
-
+{% extends "base.html" %} {% block start %}
 
 <div class="container mt-5">
+  <a href="{% url 'see_blog' %}" class="btn btn-dark">Quay lại</a>
 
-    <a href="{% url 'see_blog' %}" class="btn btn-dark">Xem blogs của bạn</a>
+  <form method="post" class="mt-5 pt-5 mb-5 pb-5" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-12">
+        <label>Nhập tiêu đề blog</label>
+        <input
+          type="text"
+          value="{{blog_obj.title}}"
+          class="form-control"
+          placeholder="Enter title"
+          name="title"
+        />
+      </div>
 
-    <form method="post" class="mt-5 pt-5 mb-5 pb-5" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-md-12">
-                <label>Nhập tiêu đề blog</label>
-                <input type="text" value="{{blog_obj.title}}" class="form-control" placeholder="Enter title" name="title">
-            </div>
+      <div class="col-md-12">{{form.media}} {{form.as_p}}</div>
 
-            <div class="col-md-12">
-                {{form.media}}
-                {{form.as_p}}
-            </div>
+      <div class="col-md-12">
+        <label for="image-input">Chọn ảnh mà bạn muốn thay đổi</label>
 
-            <div class="col-md-12">
+        <input
+          type="file"
+          name="image"
+          class="form-control"
+          id="image-input"
+          aria-describedby="inputGroupFileAddon04"
+          aria-label="Upload"
+        />
+        <img
+          src="{{ blog_obj.image.url }}"
+          class="img-fluid mb-3"
+          id="preview-image"
+        />
+      </div>
+    </div>
 
-                <input type="file" name="image" class="form-control" >
-                </div>
-
-        </div>
-
-        <button type="submit" class="btn btn-primary mt-4">Tạo blog</button>
-
-    </form>
-
+    <button type="submit" class="btn btn-primary mt-4">Cập nhật blog</button>
+  </form>
 </div>
 
+<script>
+    // Lắng nghe sự kiện khi người dùng chọn tệp tin mới
+    document.getElementById("image-input").addEventListener("change", function() {
+      // Đọc tệp tin được chọn
+      var file = this.files[0];
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        // Hiển thị ảnh đó lên trang
+        document.getElementById("preview-image").setAttribute("src", e.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+  
 
 {% endblock %}

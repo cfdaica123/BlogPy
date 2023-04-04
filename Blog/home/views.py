@@ -69,42 +69,65 @@ def add_blog(request):
     
     return render(request , 'add_blog.html' , context)
 
-
-def blog_update(request , slug):
+def blog_update(request, slug):
     context = {}
     try:
-        
-        
-        blog_obj = BlogModel.objects.get(slug = slug)
-       
-        
+        blog_obj = BlogModel.objects.get(slug=slug)
         if blog_obj.user != request.user:
             return redirect('/')
-        
         initial_dict = {'content': blog_obj.content}
-        form = BlogForm(initial = initial_dict)
+        form = BlogForm(initial=initial_dict)
         if request.method == 'POST':
             form = BlogForm(request.POST)
-            print(request.FILES)
-            image = request.FILES['image']
-            title = request.POST.get('title')
-            user = request.user
-            
             if form.is_valid():
-                content = form.cleaned_data['content']
-            
-            blog_obj = BlogModel.objects.create(
-                user = user , title = title, 
-                content = content, image = image
-            )
-        
-        
+                blog_obj.title = request.POST.get('title')
+                blog_obj.content = form.cleaned_data['content']
+                if request.FILES.get('image'):
+                    blog_obj.image = request.FILES['image']
+                blog_obj.save()
+                return redirect('/see-blog/')
         context['blog_obj'] = blog_obj
         context['form'] = form
-    except Exception as e :
+    except Exception as e:
         print(e)
+    return render(request, 'update_blog.html', context)
 
-    return render(request , 'update_blog.html' , context)
+
+# def blog_update(request , slug):
+#     context = {}
+#     try:
+        
+        
+#         blog_obj = BlogModel.objects.get(slug = slug)
+       
+        
+#         if blog_obj.user != request.user:
+#             return redirect('/')
+        
+#         initial_dict = {'content': blog_obj.content}
+#         form = BlogForm(initial = initial_dict)
+#         if request.method == 'POST':
+#             form = BlogForm(request.POST)
+#             print(request.FILES)
+#             image = request.FILES['image']
+#             title = request.POST.get('title')
+#             user = request.user
+            
+#             if form.is_valid():
+#                 content = form.cleaned_data['content']
+            
+#             blog_obj = BlogModel.objects.create(
+#                 user = user , title = title, 
+#                 content = content, image = image
+#             )
+        
+        
+#         context['blog_obj'] = blog_obj
+#         context['form'] = form
+#     except Exception as e :
+#         print(e)
+
+#     return render(request , 'update_blog.html' , context)
 
 def blog_delete(request , id):
     try:
